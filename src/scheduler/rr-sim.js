@@ -1,12 +1,16 @@
-import Heap from "./util/Heap";
+import Heap from "../util/Heap";
 
 class Process {
-  enqueueTime;
-  processingTime;
-
   Process(enqueueTime, processingTime) {
     this.enqueueTime = enqueueTime;
     this.processingTime = processingTime;
+  }
+
+  getEnqueueTime() {
+    return this.enqueueTime;
+  }
+  getProcessingTime() {
+    return this.processingTime;
   }
 }
 
@@ -25,33 +29,34 @@ class RoundRobin {
 
   simulate() {
     let tasks = [
-      new Process(1, 2),
-      new Process(2, 4),
-      new Process(3, 2),
-      new Process(4, 1)
+      {id: 1, enqueueTime: 1, processingTime: 20, color: "red"},
+      {id: 2, enqueueTime: 2, processingTime: 40, color: "blue"},
+      {id: 3, enqueueTime: 3, processingTime: 20, color: "green"},
+      {id: 4, enqueueTime: 4, processingTime: 10, color: "black"},
     ];
+
     const minHeap = new Heap((a, b) => a.processingTime < b.processingTime);
       
-    
-    tasks.sort((a, b) => a.enqueueTime != b.enqueueTime 
-      ? a.enqueueTime - b.enqueueTime : a.processingTime - b.processingTime)
+    tasks.sort((a, b) => a.enqueueTime != b.enqueueTime ? a.enqueueTime - b.enqueueTime : a.processingTime != b.processingTime
+      ? a.processingTime - b.processingTime : a.id - b.id);
       
     const result = [];
     let time = 0;
     let i = 0;
     while (i < tasks.length || minHeap.size()) {
         if (i < tasks.length && minHeap.size() === 0) {
-            time = Math.max(time, tasks[i][0])
+            time = Math.max(time, tasks[i].enqueueTime);
         }
-        while (i < tasks.length && tasks[i][0] <= time) {
+        while (i < tasks.length && tasks[i].enqueueTime <= time) {
             minHeap.push(tasks[i]);
             i++;
         }
+        
         const process = minHeap.pop();
-        time += process.processingTime
+        time += process.processingTime;
         result.push(process)
-        console.log(process.enqueueTime);
     }
+  
     return result;
     }
 }
