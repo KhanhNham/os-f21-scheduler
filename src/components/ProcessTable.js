@@ -1,5 +1,9 @@
 import React, {useState} from 'react';
-import {nanoid} from 'nanoid';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow'
 // import RoundRobin from "../scheduler/rr-sim";
 
 export default function ProcessTable() {
@@ -10,6 +14,7 @@ export default function ProcessTable() {
     "arrTime" : 0,
     "length" : 2
   }]);
+  
   const [addNewProcess, setAddNewProcess] = useState({
       arrTime: 0,
       length: 2
@@ -24,7 +29,6 @@ export default function ProcessTable() {
 
 const updateProcessInfo = () => {
     const newProcessData = {
-        id: nanoid(),
         processNumber: "P" + totalProcess,
         arrTime: addNewProcess.arrTime,
         length: addNewProcess.length
@@ -33,27 +37,35 @@ const updateProcessInfo = () => {
     setProcessInfo(newProcesses);
 }
 
+const getProcessInfo = (processNum) => {
+  processInfo.map((p) => {
+    if (p.processNumber == processNum) {
+      return {p};
+    }
+  })
+}
+
   return (
     <div>
         <h1>Hello :)</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th> Process Number </th>
-                    <th> Arriving Time </th>
-                    <th> Length </th>
-                </tr>
-            </thead>
-            <tbody>
+        <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell> Process Number </TableCell>
+                    <TableCell> Arriving Time </TableCell>
+                    <TableCell> Length </TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
                 {processInfo.map((p) => (
-                    <tr>
-                        <th> {p.processNumber} </th>
-                        <th> {p.arrTime} </th>
-                        <th> {p.length} </th>
-                    </tr>
+                    <TableRow>
+                        <TableCell> {p.processNumber} </TableCell>
+                        <TableCell> {p.arrTime} </TableCell>
+                        <TableCell> {p.length} </TableCell>
+                    </TableRow>
                 ))}
-            </tbody>
-        </table>
+            </TableBody>
+        </Table>
         <button onClick={handleAdd}> Add Process </button>
     </div>
   )
