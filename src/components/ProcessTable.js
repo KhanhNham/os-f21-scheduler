@@ -47,7 +47,6 @@ const getProcessInfo = (processNum) => {
 
   return (
     <div>
-        <h1>Hello :)</h1>
         <Table>
             <TableHead>
                 <TableRow>

@@ -7,7 +7,6 @@ export default function Graphics(props) {
 
   const drawOneProcess = (process) => {
     var prev = x;
-    console.log(process.id);
     x += process.processingTime;
     return drawRect(prev, props.y, process.processingTime, props.height, process.color, process.id);
   }
@@ -15,7 +14,7 @@ export default function Graphics(props) {
 
   const drawAllProcesses = () => {
     return props.res.map(process => {
-      return drawOneProcess(process, x);
+      return drawOneProcess(process);
       
     })
   }
@@ -23,7 +22,7 @@ export default function Graphics(props) {
   return (
     <Stage width={window.innerWidth} height={window.innerHeight}>
       <Layer>
-        <Text text="Some text on canvas" fontSize={15} />
+        {/* <Text text="Some text on canvas" fontSize={15} /> */}
         {drawAllProcesses()}
       </Layer>
     </Stage>
