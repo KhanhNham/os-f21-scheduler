@@ -20,7 +20,7 @@ export default function Graphics(props) {
   }
   
   return (
-    <Stage width={window.innerWidth} height={window.innerHeight}>
+    <Stage width={window.innerWidth} height={200}>
       <Layer>
         {/* <Text text="Some text on canvas" fontSize={15} /> */}
         {drawAllProcesses()}

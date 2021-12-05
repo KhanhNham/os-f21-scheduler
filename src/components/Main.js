@@ -8,15 +8,19 @@ import Typography from '@material-ui/core/Typography';
 import { generateTasks, getListOfColors } from "../util/TaskGenerator";
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import ProcessTable from "./ProcessTable";
+import RR_InputTable from "./InputTables/RR-InputTable";
 
 const useStyles = makeStyles((theme) => ({
   sectionHeader: {
     paddingTop: theme.spacing(4),
-    paddingBottim:theme.spacing(4),
+    paddingBottom:theme.spacing(4),
   },
-  simulateButton: {
-    marginTop: theme.spacing(4),
+  section: {
+    paddingTop: theme.spacing(2),
+    paddingBottom:theme.spacing(2),
+  },
+  schedulerButtonGroup: {
+    marginRight: theme.spacing(4),
   }
 }));
 
@@ -44,17 +48,41 @@ export default function Main() {
     <>
       <Container maxWidth="lg">
         <Header />
-        <Typography component="h4" variant="h4" className={classes.sectionHeader}> Tuning Parameters</Typography>
-        <ProcessTable/>
-        <Button
-            onClick={simulate}
-            variant="contained"
-            color="primary"
-            className={classes.simulateButton}
-          >
-            Simulate
+        {/* <Typography component="h5" variant="h5" className={classes.sectionHeader}> Choose a scheduler</Typography> */}
+        <div className={classes.section} >
+          <Button
+              variant="outlined"
+              color="primary"
+              size="large"
+              className={classes.schedulerButtonGroup}
+            >
+              Round Robin
           </Button>
-        {graphic}
+          <Button
+              variant="outlined"
+              color="primary"
+              size="large"
+              className={classes.schedulerButtonGroup}
+            >
+              MLFQ
+          </Button>
+        </div>
+        
+        <div className={classes.section} >
+          <RR_InputTable/>
+        </div>
+        
+        <div className={classes.section} >
+          <Button
+              onClick={simulate}
+              variant="outlined"
+              color="primary"
+              size="large"
+            >
+              Simulate
+          </Button>
+          {graphic}
+        </div>
       </Container>
       <Footer title="Footer" description="Something here to give the footer a purpose!" />
     </>
