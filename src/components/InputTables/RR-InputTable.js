@@ -6,7 +6,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow'
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import { Input } from '@mui/material';
+import TextField from '@material-ui/core/TextField';
+import { InputStore } from '../Store';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -20,61 +21,64 @@ const useStyles = makeStyles((theme) => ({
 
 export default function RR_InputTable() {
   const classes = useStyles();
-  const [totalProcess, setTotalProcess] = useState(1);
-  const [processInfo, setProcessInfo] = useState([{
-    "processNumber": "P0",
-    "arrTime" : 0,
-    "length" : 2
-  }]);
   
-  const [addNewProcess, setAddNewProcess] = useState({
-      arrTime: 0,
-      length: 2
-  })
+  const [totalProcess, setTotalProcess] = useState(0);
+  const [enqueueTime, setEnqueueTime] = useState(0);
+  const [processingTime, setProcessingTime] = useState(0);
+
+  const [process, setProcess] = useState({
+    processNumber: "P" + totalProcess,
+    enqueueTime: 0,
+    processingTime: 0,
+  });
+  const [allProcesses, setAllProcesses] = useState([]);
+
+  React.useEffect(() => {
+    // console.log(allProcesses);
+    sendInputToStore();
+  }, [allProcesses]);
 
   const handleAdd = () => {
-    const newProcessInfo = {...addNewProcess};
-    setAddNewProcess(newProcessInfo);
-    updateProcessInfo();
+    setAllProcesses(oldArray => 
+      [...oldArray, {processNumber: "P" + totalProcess, enqueueTime: parseInt(enqueueTime), processingTime: parseInt(processingTime)}]
+    );
+    setEnqueueTime(0);
+    setProcessingTime(0);
     setTotalProcess(totalProcess + 1);
-}
+  }
 
-const updateProcessInfo = () => {
-    const newProcessData = {
-        processNumber: "P" + totalProcess,
-        arrTime: addNewProcess.arrTime,
-        length: addNewProcess.length
-    }
-    const newProcesses = [...processInfo, newProcessData];
-    setProcessInfo(newProcesses);
-}
-
-const getProcessInfo = (processNum) => {
-  processInfo.map((p) => {
-    if (p.processNumber == processNum) {
-      return {p};
-    }
-  })
-}
+  const sendInputToStore = () => {
+    InputStore.setInput(allProcesses);
+    InputStore.emitChange();
+  }
 
   return (
     <div>
-        <Table className={classes.table}>
+        <Table className={classes.table} component="form">
             <TableHead>
                 <TableRow>
                     <TableCell align="center"> Process Number </TableCell>
                     <TableCell align="center"> Arriving Time </TableCell>
-                    <TableCell align="center"> Length </TableCell>
+                    <TableCell align="center"> Processing Time </TableCell>
                 </TableRow>
             </TableHead>
-            <TableBody>
-                {processInfo.map((p) => (
-                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 }}}>
+            <TableBody >
+                {totalProcess !== 0 ? allProcesses.map((p) => (
+                    <TableRow key={p.processNumber}>
                         <TableCell align="center"> {p.processNumber} </TableCell>
-                        <TableCell align="center"><Input fullWidth/></TableCell>
-                        <TableCell align="center"><Input fullWidth/></TableCell>
+                        <TableCell align="center"> {p.enqueueTime}</TableCell>
+                        <TableCell align="center"> {p.processingTime}</TableCell>
                     </TableRow>
-                ))}
+                )) : null}
+                <TableRow>
+                  <TableCell align="center"> {"P" + totalProcess} </TableCell>
+                  <TableCell align="center">
+                    <TextField required placeholder="Please enter a multiple of 10" fullWidth name="enqueueTime" onChange={(e) => setEnqueueTime(e.target.value)}/>
+                  </TableCell>
+                  <TableCell align="center">
+                    <TextField required placeholder="Please enter a multiple of 10" fullWidth name="processingTime" onChange={(e) => setProcessingTime(e.target.value)}/>
+                  </TableCell>
+                </TableRow>
             </TableBody>
         </Table>
         <Button onClick={handleAdd} variant="outlined" color="primary" size="small" className={classes.button}>Add Process</Button>

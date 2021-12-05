@@ -16,8 +16,7 @@ class Process {
 
 class RoundRobin {
   
-  constructor(numTasks, listOfTasks) {
-    this.numTasks = numTasks;
+  constructor(listOfTasks) {
     this.tasks = listOfTasks;
   };
 
@@ -44,8 +43,12 @@ class RoundRobin {
         time += process.processingTime;
         result.push(process)
     }
+
+    // for (var j =0; j < this.tasks.length; j++) {
+    //   console.log("enqueuingTime: " + this.tasks[j].enqueueTime + " processingTime: " + this.tasks[j].processingTime + " id: " + this.tasks[j].id);
+    // }
   
-    return this.tasks;
+    return result;
     }
 }
 

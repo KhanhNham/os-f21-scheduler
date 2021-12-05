@@ -9,6 +9,8 @@ import { generateTasks, getListOfColors } from "../util/TaskGenerator";
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import RR_InputTable from "./InputTables/RR-InputTable";
+import { InputStore } from "./Store";
+import { useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
   sectionHeader: {
@@ -25,23 +27,33 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Main() {
-  let numTasks = 4;
+  const [input, setInput] = useState(InputStore.getInput());
+
+  useEffect(() => {
+    InputStore.addChangeListener(onChange);
+    return () => InputStore.removeChangeListener(onChange);
+  }, [input]);
+
+  function onChange() {
+    setInput(InputStore.getInput());
+  }
+
+  
   const classes = useStyles();
 
   let [showGraphic, setShow] = useState(false);
   let [graphic, setGraphic] = useState(<></>);
 
-  var res = [];
   function simulate() {
-    const tasks = generateTasks(numTasks);
+    const tasks = generateTasks(input);
   
-    const roundRobin = new RoundRobin(numTasks, tasks);
-    res = roundRobin.simulate();
+    const roundRobin = new RoundRobin(tasks);
+    const res = roundRobin.simulate();
     for (var i =0; i < res.length; i++) {
       console.log("enqueuingTime: " + res[i].enqueueTime + " processingTime: " + res[i].processingTime + " id: " + res[i].id);
     }
     setShow(true);
-    setGraphic(<Graphics res={res} startX={100} y={10} height={50}/>);
+    setGraphic(<Graphics res={res} startX={100} y={10} height={100}/>);
   }
   
   return (
@@ -81,8 +93,8 @@ export default function Main() {
             >
               Simulate
           </Button>
-          {graphic}
         </div>
+        <div className={classes.section}>{graphic}</div>
       </Container>
       <Footer title="Footer" description="Something here to give the footer a purpose!" />
     </>

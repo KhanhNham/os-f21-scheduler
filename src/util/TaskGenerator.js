@@ -1,3 +1,5 @@
+import { createSecurePair } from "tls";
+
 const PROCESSING_TIME_UPPER_BOUND = 10;
 const ENQUEUE_TIME_SCALE = 5;
 const SCALE = 10;
@@ -17,19 +19,34 @@ export const getListOfColors = (numTasks) => {
   return colorLs;
 }
 
-export const generateTasks = (numTasks) => {
+export const generateTasks = (listOfTasks) => {
   let tasks = [];
-  const maxEnqueueTime = numTasks;
+  const numTasks = listOfTasks.length;
   const colorLs = getListOfColors(numTasks);
-  let prevEnqueueTime = 0;
 
   for (var i =0; i < numTasks; i++) {
-    var processingTime = Math.floor(1 + Math.random()*PROCESSING_TIME_UPPER_BOUND) * SCALE;
-    var enqueueTime = prevEnqueueTime + Math.floor(Math.random() * maxEnqueueTime);
+    const curr = listOfTasks[i];
     tasks.push(
-      {id: i, enqueueTime: enqueueTime, processingTime: processingTime, color: colorLs[i]},
+      {id: i, enqueueTime: curr.enqueueTime, processingTime: curr.processingTime, color: colorLs[i]},
     );
-    prevEnqueueTime = enqueueTime;
   }
   return tasks;
 }
+
+// THIS IS USED FOR GENERATING TASKS ARBITRARILY
+// export const generateTasks = (numTasks) => {
+//   let tasks = [];
+//   const maxEnqueueTime = numTasks;
+//   const colorLs = getListOfColors(numTasks);
+//   let prevEnqueueTime = 0;
+
+//   for (var i =0; i < numTasks; i++) {
+//     var processingTime = Math.floor(1 + Math.random()*PROCESSING_TIME_UPPER_BOUND) * SCALE;
+//     var enqueueTime = prevEnqueueTime + Math.floor(Math.random() * maxEnqueueTime);
+//     tasks.push(
+//       {id: i, enqueueTime: enqueueTime, processingTime: processingTime, color: colorLs[i]},
+//     );
+//     prevEnqueueTime = enqueueTime;
+//   }
+//   return tasks;
+// }
