@@ -1,21 +1,6 @@
 import Heap from "../util/Heap";
 
-class Process {
-  Process(enqueueTime, processingTime) {
-    this.enqueueTime = enqueueTime;
-    this.processingTime = processingTime;
-  }
-
-  getEnqueueTime() {
-    return this.enqueueTime;
-  }
-  getProcessingTime() {
-    return this.processingTime;
-  }
-}
-
-class RoundRobin {
-  
+class SJF {
   constructor(listOfTasks) {
     this.tasks = listOfTasks;
   };
@@ -52,4 +37,4 @@ class RoundRobin {
     }
 }
 
-export default RoundRobin;
+export default SJF;

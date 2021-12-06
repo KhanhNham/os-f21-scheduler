@@ -3,14 +3,14 @@ import Header from "./Layout/Header";
 import Container from '@material-ui/core/Container';
 import Footer from "./Layout/Footer";
 import Graphics from "./Graphics"
-import RoundRobin from '../scheduler/RoundRobin';
-import Typography from '@material-ui/core/Typography';
+import SJF from '../scheduler/SJF';
 import { generateTasks, getListOfColors } from "../util/TaskGenerator";
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import RR_InputTable from "./InputTables/RR-InputTable";
 import { InputStore } from "./Store";
 import { useEffect } from "react";
+import { RoundRobin } from "../scheduler/RR";
 
 const useStyles = makeStyles((theme) => ({
   sectionHeader: {
@@ -28,16 +28,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Main() {
   const [input, setInput] = useState(InputStore.getInput());
+  const [quantum, setQuantum] = useState(InputStore.getQuantum());
+  const [scheduler, setScheduler] = useState("SJF");
 
   useEffect(() => {
     InputStore.addChangeListener(onChange);
     return () => InputStore.removeChangeListener(onChange);
-  }, [input]);
+  }, [input, quantum, scheduler]);
 
   function onChange() {
     setInput(InputStore.getInput());
+    setQuantum(InputStore.getQuantum());
   }
-
   
   const classes = useStyles();
 
@@ -46,14 +48,29 @@ export default function Main() {
 
   function simulate() {
     const tasks = generateTasks(input);
-  
-    const roundRobin = new RoundRobin(tasks);
-    const res = roundRobin.simulate();
+    const map = new Map();
+    tasks.map(p => {
+      map.set(p.id, p.color);
+    })
+
+    var res = [];
+    if (scheduler === "RR") {
+      const rr = new RoundRobin(tasks, 20);
+      res = rr.simulate(); 
+    } else if (scheduler === "SJF") {
+      const sjf = new SJF(tasks);
+      res = sjf.simulate();
+    }
+    
     for (var i =0; i < res.length; i++) {
-      console.log("enqueuingTime: " + res[i].enqueueTime + " processingTime: " + res[i].processingTime + " id: " + res[i].id);
+      console.log(res[i]);
     }
     setShow(true);
-    setGraphic(<Graphics res={res} startX={100} y={10} height={100}/>);
+    setGraphic(<Graphics res={res} startX={100} y={10} height={100} map={map} scheduler={scheduler}/>);
+  }
+
+  const getInputTable = () => {
+    return <RR_InputTable scheduler={scheduler} />;;
   }
   
   return (
@@ -66,6 +83,16 @@ export default function Main() {
               variant="outlined"
               color="primary"
               size="large"
+              onClick={() => setScheduler("SJF")}
+              className={classes.schedulerButtonGroup}
+            >
+              Shortest Job First
+          </Button>
+          <Button
+              variant="outlined"
+              color="primary"
+              size="large"
+              onClick={() => setScheduler("RR")}
               className={classes.schedulerButtonGroup}
             >
               Round Robin
@@ -74,6 +101,7 @@ export default function Main() {
               variant="outlined"
               color="primary"
               size="large"
+              onClick={() => setScheduler("MLFQ")}
               className={classes.schedulerButtonGroup}
             >
               MLFQ
@@ -81,7 +109,7 @@ export default function Main() {
         </div>
         
         <div className={classes.section} >
-          <RR_InputTable/>
+          {getInputTable()}
         </div>
         
         <div className={classes.section} >

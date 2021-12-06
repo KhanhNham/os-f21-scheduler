@@ -8,6 +8,7 @@ class Store extends EventEmitter {
     super();
     this.input = [];
     this.loadingStatus = "UNDEFINED";
+    this.quantum = 0;
   }
 
   addChangeListener(callback) {
@@ -29,9 +30,15 @@ class Store extends EventEmitter {
   getNumInput() {
     return this.input.length;
   }
+  getQuantum() {
+    return this.quantum;
+  }
 
   setInput(input) {
     this.input = input;
+  }
+  setQuantum(quantum) {
+    this.quantum = quantum;
   }
 }
 

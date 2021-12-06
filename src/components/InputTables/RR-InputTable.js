@@ -16,12 +16,16 @@ const useStyles = makeStyles((theme) => ({
   table: {
     // border: `1px solid ${theme.palette.divider}`,
     backgroundColor: theme.palette.grey[300],
-  }
+  },
+  section: {
+    paddingTop: theme.spacing(2),
+    paddingBottom:theme.spacing(2),
+  },
 }));
 
-export default function RR_InputTable() {
+export default function RR_InputTable(props) {
   const classes = useStyles();
-  
+  const [quantum, setQuantum] = useState(0);
   const [totalProcess, setTotalProcess] = useState(0);
   const [enqueueTime, setEnqueueTime] = useState(0);
   const [processingTime, setProcessingTime] = useState(0);
@@ -49,11 +53,25 @@ export default function RR_InputTable() {
 
   const sendInputToStore = () => {
     InputStore.setInput(allProcesses);
+    InputStore.setQuantum(parseInt(quantum));
     InputStore.emitChange();
   }
 
   return (
     <div>
+      {props.scheduler !== "SJF" ? (
+          <div className={classes.section}>
+            Quantum Time: <TextField required  name="quantum" onChange={(e) => setQuantum(e.target.value)}/>
+          </div>
+      ) : null}
+
+      {props.scheduler === "MLFQ" ? (
+          <div className={classes.section}>
+            Number of Queues: <TextField required  name="numQueues" onChange={(e) => setQuantum(e.target.value)}/>
+          </div>
+      ) : null}
+
+        
         <Table className={classes.table} component="form">
             <TableHead>
                 <TableRow>

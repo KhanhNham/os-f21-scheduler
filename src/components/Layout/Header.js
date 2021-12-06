@@ -38,7 +38,7 @@ export default function Header() {
           <Typography
             component="h2"
             variant="h4"
-            color="colorPrimary"
+            color="primary"
             align="center"
             noWrap
             className={classes.toolbarTitle}
