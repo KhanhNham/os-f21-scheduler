@@ -1,14 +1,16 @@
+import Queue from "../util/Queue";
+
 export class RoundRobin {
   constructor(listOfTasks, quantum) {
     this.tasks = listOfTasks;
     this.quantum = quantum;
     this.time = 0;
     this.n = listOfTasks.length;
-    this.queue = [];
+    this.queue = new Queue();
     this.wait = [];
     this.turn = [];
     this.arrival = [];
-    this.burst = [];
+    this.inComingTasks = new Queue();
     this.tempBurst = [];
     this.complete = [];
     this.maxProccessIndex = 0;
@@ -17,68 +19,49 @@ export class RoundRobin {
 
   
   simulate() {    
-    // this.tasks.sort((a, b) => a.enqueueTime != b.enqueueTime ? a.enqueueTime - b.enqueueTime : a.processingTime != b.processingTime
-    //   ? a.processingTime - b.processingTime : a.id - b.id);
+    this.tasks.sort((a, b) => a.enqueueTime - b.enqueueTime);
+    this.tasks.map(p => this.inComingTasks.enqueue(p));
     this.tasks.map(p => this.arrival.push(p.enqueueTime));
 
     this.tasks.map(p => {
-      this.burst.push(p.processingTime);
+      // this.burst.push(p.processingTime);
       this.tempBurst.push(p.processingTime);
     });
 
 
     for (var i =0; i < this.tasks.length; i++) {
       this.complete[i] = false;
-      this.queue[i] = 0;
     }
 
     if (this.time < this.arrival[0]) {
       this.time = this.arrival[0];
     }
    
-    this.queue[0] = 1;
-    console.log(this.arrival);
-    console.log(this.burst);
+    this.queue.enqueue(1);
+
     while (true) {
       console.log("Running");
-      var done = true;
-      for (var i =0; i < this.n; i++) {
-        if (this.tempBurst[i] !== 0) {
-          done = false;
-          break;
-        }
-      }
-      if (done) {
+      if (this.checkIfAllDone()) {
         break;
       }
 
-      for (var i =0; i < this.n && (this.queue[i] !== 0); i++) {
+      while (!this.queue.isEmpty()) {
         var ctr = 0;
-        while (ctr < this.quantum && (this.tempBurst[this.queue[0]-1] > 0)) {
-          this.tempBurst[this.queue[0] - 1] -= 1;
-          this.result.push(this.queue[0]-1);
+        while (ctr < this.quantum && (this.tempBurst[this.queue.peek()-1] > 0)) {
+          this.tempBurst[this.queue.peek() - 1] -= 1;
+          this.result.push(this.queue.peek()-1);
+          console.log(this.queue.printQueue());
           this.time += 1;
           ctr++;
           this.checkNewArrival();
         }
 
-        if ((this.tempBurst[this.queue[0]-1] === 0) && (this.complete[this.queue[0]-1] == false)) {
-          this.turn[this.queue[0]-1] = this.time;
-          this.complete[this.queue[0]-1] = true;
-        }
-
-        var idle = true;
-        if(this.queue[this.n-1] === 0){
-            for(var k = 0; k < this.n && this.queue[k] !== 0; k++){
-                if(this.complete[this.queue[k]-1] == false){
-                    idle = false;
-                }
-            }
-        } else {
-          idle = false;
+        if ((this.tempBurst[this.queue.peek()-1] === 0) && (this.complete[this.queue.peek()-1] == false)) {
+          this.turn[this.queue.peek()-1] = this.time;
+          this.complete[this.queue.peek()-1] = true;
         }
           
-        if(idle){
+        if(this.queue.isEmpty()){
           this.time++;
           this.checkNewArrival();
         }
@@ -87,6 +70,17 @@ export class RoundRobin {
     }
     console.log("Done");
     return this.result;
+  }
+
+  checkIfAllDone() {
+    var done = true;
+      for (var i =0; i < this.n; i++) {
+        if (this.tempBurst[i] !== 0) {
+          done = false;
+          break;
+        }
+      }
+    return done;
   }
 
   checkNewArrival() {
@@ -101,31 +95,13 @@ export class RoundRobin {
           }
       }
       if(newArrival) {
-        this.queueUpdation();  
+        this.queue.enqueue(this.maxProccessIndex + 1);
       }      
     }
   }
 
-  queueUpdation() {
-    var zeroIndex = -1;
-      for(var i = 0; i < this.n; i++){
-          if(this.queue[i] == 0){
-              zeroIndex = i;
-              break;
-          }
-      }
-      if(zeroIndex == -1) {
-        return;
-      }
-          
-      this.queue[zeroIndex] = this.maxProccessIndex + 1;
-  }
-
   queueMaintainence() {
-    for(var i = 0; (i < this.n-1) && (this.queue[i+1] != 0) ; i++){
-      var temp = this.queue[i];
-      this.queue[i] = this.queue[i+1];
-      this.queue[i+1] = temp;
-    }
+    var top = this.queue.dequeue();
+    this.queue.enqueue(top);
   }
 }

@@ -55,7 +55,7 @@ export default function Main() {
 
     var res = [];
     if (scheduler === "RR") {
-      const rr = new RoundRobin(tasks, 20);
+      const rr = new RoundRobin(tasks, 2);
       res = rr.simulate(); 
     } else if (scheduler === "SJF") {
       const sjf = new SJF(tasks);
