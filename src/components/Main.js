@@ -7,7 +7,7 @@ import SJF from '../scheduler/SJF';
 import { generateTasks, getListOfColors } from "../util/TaskGenerator";
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import RR_InputTable from "./InputTables/RR-InputTable";
+import InputTable from "./InputTable";
 import { InputStore } from "./Store";
 import { useEffect } from "react";
 import { RoundRobin } from "../scheduler/RR";
@@ -48,29 +48,29 @@ export default function Main() {
 
   function simulate() {
     const tasks = generateTasks(input);
-    const map = new Map();
+    const colorMap = new Map();
     tasks.map(p => {
-      map.set(p.id, p.color);
+      colorMap.set(p.id, p.color);
     })
-
+    // console.log("quantum is "+ quantum);
     var res = [];
     if (scheduler === "RR") {
-      const rr = new RoundRobin(tasks, 2);
+      const rr = new RoundRobin(tasks, quantum);
       res = rr.simulate(); 
     } else if (scheduler === "SJF") {
       const sjf = new SJF(tasks);
       res = sjf.simulate();
     }
     
-    for (var i =0; i < res.length; i++) {
-      console.log(res[i]);
-    }
+    // for (var i =0; i < res.length; i++) {
+    //   console.log(res[i]);
+    // }
     setShow(true);
-    setGraphic(<Graphics res={res} startX={100} y={10} height={100} map={map} scheduler={scheduler}/>);
+    setGraphic(<Graphics res={res} startX={100} y={10} height={100} colorMap={colorMap} scheduler={scheduler}/>);
   }
 
   const getInputTable = () => {
-    return <RR_InputTable scheduler={scheduler} />;;
+    return <InputTable scheduler={scheduler} />;;
   }
   
   return (

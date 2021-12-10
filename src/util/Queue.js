@@ -32,7 +32,7 @@ export default class Queue {
     printQueue() {
       var str = "";
       for(var i = 0; i < this.items.length; i++)
-          str += this.items[i] +" ";
+          str += this.items[i].id +" ";
       return str;
     }
 }

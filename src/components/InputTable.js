@@ -7,7 +7,7 @@ import TableRow from '@mui/material/TableRow'
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import { InputStore } from '../Store';
+import { InputStore } from './Store';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -23,24 +23,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function RR_InputTable(props) {
+export default function InputTable(props) {
   const classes = useStyles();
   const [quantum, setQuantum] = useState(0);
   const [totalProcess, setTotalProcess] = useState(0);
   const [enqueueTime, setEnqueueTime] = useState(0);
   const [processingTime, setProcessingTime] = useState(0);
-
-  const [process, setProcess] = useState({
-    processNumber: "P" + totalProcess,
-    enqueueTime: 0,
-    processingTime: 0,
-  });
   const [allProcesses, setAllProcesses] = useState([]);
 
   React.useEffect(() => {
     // console.log(allProcesses);
     sendInputToStore();
-  }, [allProcesses]);
+  }, [allProcesses, quantum]);
 
   const handleAdd = () => {
     setAllProcesses(oldArray => 
