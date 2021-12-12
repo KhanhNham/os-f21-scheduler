@@ -9,6 +9,8 @@ class Store extends EventEmitter {
     this.input = [];
     this.loadingStatus = "UNDEFINED";
     this.quantum = 0;
+    this.numQueues = 0;
+    this.listOfQuantum = [];
   }
 
   addChangeListener(callback) {
@@ -30,15 +32,25 @@ class Store extends EventEmitter {
   getNumInput() {
     return this.input.length;
   }
+
   getQuantum() {
     return this.quantum;
+  }
+
+  getListOfQuantum() {
+    return this.listOfQuantum;
   }
 
   setInput(input) {
     this.input = input;
   }
+  
   setQuantum(quantum) {
     this.quantum = quantum;
+  }
+  
+  setListOfQuantum(listOfQuantum) {
+    this.listOfQuantum = listOfQuantum;
   }
 }
 

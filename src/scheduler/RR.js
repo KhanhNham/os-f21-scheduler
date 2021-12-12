@@ -7,16 +7,14 @@ export class RoundRobin {
     this.time = 0;
     this.queue = new Queue();
     this.incomingTasks = new Queue();
-    this.complete = [];
     this.result = [];
+    this.lastEnqueueTime =0;
   }
 
   
   simulate() {  
-    for (var i =0; i < this.tasks.length; i++) {
-      this.complete[this.tasks[i].id] = false;
-    }  
     this.tasks.sort((a, b) => a.enqueueTime - b.enqueueTime);
+    this.lastEnqueueTime = this.tasks[this.tasks.length-1].enqueueTime;
     this.tasks.map(p => this.incomingTasks.enqueue(p));
 
     this.time = this.incomingTasks.peek().enqueueTime;
@@ -25,7 +23,6 @@ export class RoundRobin {
 
     while (!this.queue.isEmpty()) {
       var ctr = 0;
-      // console.log(this.queue.printQueue());
       while (ctr < this.quantum && (this.queue.peek().processingTime > 0)) {
         this.queue.peek().processingTime -= 1;
         this.result.push(this.queue.peek().id);
@@ -33,24 +30,21 @@ export class RoundRobin {
         ctr++;
         this.checkNewArrival();
       }
-
-      if ((this.queue.peek().processingTime === 0) && (this.complete[this.queue.peek().id] == false)) {
-        this.complete[this.queue.peek().id] = true;
-      }
         
-      if(this.queue.isEmpty()){
-        this.time++;
+      this.queueMaintainence();
+
+      while (this.queue.isEmpty() && this.time <= this.lastEnqueueTime){
+        this.time += 1;
         this.checkNewArrival();
       }
-      this.queueMaintainence();
     }
-    
+    console.log(this.result);
     console.log("Done");
     return this.result;
   }
 
   checkNewArrival() {
-    if (!this.incomingTasks.isEmpty()) {
+    while (!this.incomingTasks.isEmpty() && this.incomingTasks.peek().enqueueTime <= this.time) {
       this.queue.enqueue(this.incomingTasks.dequeue());
     }
   }

@@ -11,15 +11,17 @@ import InputTable from "./InputTable";
 import { InputStore } from "./Store";
 import { useEffect } from "react";
 import { RoundRobin } from "../scheduler/RR";
+import { MLFQ } from "../scheduler/MLFQ";
+import { Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
   sectionHeader: {
     paddingTop: theme.spacing(4),
-    paddingBottom:theme.spacing(4),
   },
   section: {
     paddingTop: theme.spacing(2),
     paddingBottom:theme.spacing(2),
+    // borderTop: `1px solid ${theme.palette.divider}`,
   },
   schedulerButtonGroup: {
     marginRight: theme.spacing(4),
@@ -30,15 +32,17 @@ export default function Main() {
   const [input, setInput] = useState(InputStore.getInput());
   const [quantum, setQuantum] = useState(InputStore.getQuantum());
   const [scheduler, setScheduler] = useState("SJF");
+  const [listOfQuantum, setListOfQuantum] = useState([]);
 
   useEffect(() => {
     InputStore.addChangeListener(onChange);
     return () => InputStore.removeChangeListener(onChange);
-  }, [input, quantum, scheduler]);
+  }, [input, quantum, scheduler, listOfQuantum]);
 
   function onChange() {
     setInput(InputStore.getInput());
     setQuantum(InputStore.getQuantum());
+    setListOfQuantum(InputStore.getListOfQuantum());
   }
   
   const classes = useStyles();
@@ -52,14 +56,18 @@ export default function Main() {
     tasks.map(p => {
       colorMap.set(p.id, p.color);
     })
-    // console.log("quantum is "+ quantum);
     var res = [];
+    // console.log("list of quantum " + listOfQuantum);
+
     if (scheduler === "RR") {
       const rr = new RoundRobin(tasks, quantum);
       res = rr.simulate(); 
     } else if (scheduler === "SJF") {
       const sjf = new SJF(tasks);
       res = sjf.simulate();
+    } else if (scheduler === "MLFQ") {
+      const mlfq = new MLFQ(listOfQuantum, tasks);
+      res = mlfq.simulate();
     }
     
     // for (var i =0; i < res.length; i++) {
@@ -77,10 +85,19 @@ export default function Main() {
     <>
       <Container maxWidth="lg">
         <Header />
-        {/* <Typography component="h5" variant="h5" className={classes.sectionHeader}> Choose a scheduler</Typography> */}
+
+        <Typography
+          component="h4"
+          variant="h4"
+          color="primary"
+          className={classes.sectionHeader}
+        >
+          Select a scheduler
+        </Typography>
+        
         <div className={classes.section} >
           <Button
-              variant="outlined"
+              variant="contained"
               color="primary"
               size="large"
               onClick={() => setScheduler("SJF")}
@@ -89,7 +106,7 @@ export default function Main() {
               Shortest Job First
           </Button>
           <Button
-              variant="outlined"
+              variant="contained"
               color="primary"
               size="large"
               onClick={() => setScheduler("RR")}
@@ -98,7 +115,7 @@ export default function Main() {
               Round Robin
           </Button>
           <Button
-              variant="outlined"
+              variant="contained"
               color="primary"
               size="large"
               onClick={() => setScheduler("MLFQ")}
@@ -108,14 +125,21 @@ export default function Main() {
           </Button>
         </div>
         
-        <div className={classes.section} >
-          {getInputTable()}
-        </div>
+        <Typography
+          component="h4"
+          variant="h4"
+          color="primary"
+          className={classes.sectionHeader}
+        >
+          Select parameters
+        </Typography>
+
+        <div className={classes.section} > {getInputTable()} </div>
         
         <div className={classes.section} >
           <Button
               onClick={simulate}
-              variant="outlined"
+              variant="contained"
               color="primary"
               size="large"
             >
@@ -124,7 +148,7 @@ export default function Main() {
         </div>
         <div className={classes.section}>{graphic}</div>
       </Container>
-      <Footer title="Footer" description="Something here to give the footer a purpose!" />
+      {/* <Footer title="Footer" description="Something here to give the footer a purpose!" /> */}
     </>
   )
 }

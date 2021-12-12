@@ -8,12 +8,13 @@ export default function Graphics(props) {
   const drawRect = (x, y, width, height, color) => <Rect key={count} x={x} y={y} width={width} height={height} fill={color}/>
 
   const drawOneProcess = (process) => {
-    if (props.scheduler === "RR") {
-      return drawRect(x+count, props.y, 1, props.height, props.colorMap.get(process));
-    } else if (props.scheduler === "SJF") {
+    if (props.scheduler === "SJF" ) {
       var prev = x;
       x += process.processingTime;
       return drawRect(prev, props.y, process.processingTime, props.height, process.color);
+      
+    } else {
+      return drawRect(x+count, props.y, 1, props.height, props.colorMap.get(process));
     }
     
   }

@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { InputStore } from './Store';
+import { indigo } from '@mui/material/colors';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -15,12 +16,17 @@ const useStyles = makeStyles((theme) => ({
   },
   table: {
     // border: `1px solid ${theme.palette.divider}`,
-    backgroundColor: theme.palette.grey[300],
+    // backgroundColor: theme.palette.grey[300],
+    variant: "outlined",
+    backgroundColor: indigo[100],
   },
-  section: {
+  subsection: {
     paddingTop: theme.spacing(2),
     paddingBottom:theme.spacing(2),
   },
+  quantumOptions: {
+    padding: theme.spacing(1),
+  }
 }));
 
 export default function InputTable(props) {
@@ -30,12 +36,21 @@ export default function InputTable(props) {
   const [enqueueTime, setEnqueueTime] = useState(0);
   const [processingTime, setProcessingTime] = useState(0);
   const [allProcesses, setAllProcesses] = useState([]);
-
+  const [numQueues, setNumQueues] = useState(0);
+  const [listOfQuantum, setListOfQuantum] = useState([]);
+  const [renderListOfQuantum, setRenderListOfQuantum] = useState(false);
+  
   React.useEffect(() => {
-    // console.log(allProcesses);
     sendInputToStore();
-  }, [allProcesses, quantum]);
+  }, [allProcesses, quantum, numQueues, renderListOfQuantum]);
 
+  const initializeListOfQuantum = (num) => {
+    var arr = [];
+    for (var i =0; i< num; i++) {
+      arr.push(0);
+    }
+    return arr;
+  }
   const handleAdd = () => {
     setAllProcesses(oldArray => 
       [...oldArray, {processNumber: "P" + totalProcess, enqueueTime: parseInt(enqueueTime), processingTime: parseInt(processingTime)}]
@@ -48,28 +63,75 @@ export default function InputTable(props) {
   const sendInputToStore = () => {
     InputStore.setInput(allProcesses);
     InputStore.setQuantum(parseInt(quantum));
+    InputStore.setListOfQuantum(listOfQuantum);
     InputStore.emitChange();
+  }
+
+  const updateListOfQuantum = (index, value) => {
+    listOfQuantum[index] = parseInt(value);
+    return listOfQuantum;
+  }
+  
+  const getListOfQuantum = () => {
+    return listOfQuantum.map((q, index) => {
+      return (
+        <TextField
+          required
+          defaultValue={q}
+          key={"quantum" + index}
+          name={"quantum" + index}
+          id="outlined-basic"
+          variant="outlined"
+          color="outlined-primary"
+          label={"Quantum of queue "+index}
+          className={classes.quantumOptions}
+          onChange={(e) => setListOfQuantum(updateListOfQuantum(index, e.target.value))}
+        />
+      )
+    })
   }
 
   return (
     <div>
-      {props.scheduler !== "SJF" ? (
-          <div className={classes.section}>
-            Quantum Time: <TextField required  name="quantum" onChange={(e) => setQuantum(e.target.value)}/>
+      {props.scheduler === "RR" ? (
+          <div className={classes.subsection}>
+            <TextField 
+              required
+              className={classes.quantumOptions}
+              id="outlined-basic"
+              variant="outlined"
+              color="outlined-primary"
+              label="Quantum Time"
+              name="quantum"
+              onChange={(e) => setQuantum(e.target.value)}/>
           </div>
       ) : null}
 
       {props.scheduler === "MLFQ" ? (
-          <div className={classes.section}>
-            Number of Queues: <TextField required  name="numQueues" onChange={(e) => setQuantum(e.target.value)}/>
+        <>
+          <div className={classes.subsection}>
+            <TextField 
+              required
+              className={classes.quantumOptions}
+              id="outlined-basic"
+              variant="outlined"
+              color="outlined-primary"
+              label="Number of queues"
+              name="numQueues"
+              onChange={(e) => {setNumQueues(e.target.value); setListOfQuantum(initializeListOfQuantum(e.target.value))}} onKeyDown={(e) => setRenderListOfQuantum(true)}/>
           </div>
+          
+          <div className={classes.subsection}>
+            {renderListOfQuantum ? getListOfQuantum() : null}
+          </div>
+        </> 
       ) : null}
 
         
         <Table className={classes.table} component="form">
             <TableHead>
                 <TableRow>
-                    <TableCell align="center"> Process Number </TableCell>
+                    <TableCell align="center" > Process Number </TableCell>
                     <TableCell align="center"> Arriving Time </TableCell>
                     <TableCell align="center"> Processing Time </TableCell>
                 </TableRow>
@@ -93,7 +155,7 @@ export default function InputTable(props) {
                 </TableRow>
             </TableBody>
         </Table>
-        <Button onClick={handleAdd} variant="outlined" color="primary" size="small" className={classes.button}>Add Process</Button>
+        <Button onClick={handleAdd} variant="contained" color="primary" size="medium" className={classes.button}>Add Process</Button>
     </div>
   )
 }
