@@ -38,7 +38,7 @@ export default function InputTable(props) {
   const [allProcesses, setAllProcesses] = useState([]);
   const [numQueues, setNumQueues] = useState(0);
   const [listOfQuantum, setListOfQuantum] = useState([]);
-  const [listOfAllotment, setListOfAllotment] = useState([]);
+  const [listOfAllotments, setlistOfAllotments] = useState([]);
   const [renderOptions, setrenderOptions] = useState(false);
   const [windowHeight, setWindowHeight] = useState(InputStore.getWindowHeight());
 
@@ -54,7 +54,7 @@ export default function InputTable(props) {
     return arr;
   }
   const handleAdd = () => {
-    setWindowHeight(windowHeight + 40);
+    setWindowHeight(windowHeight + 100);
     setAllProcesses(oldArray => 
       [...oldArray, {processNumber: "P" + totalProcess, enqueueTime: parseInt(enqueueTime), processingTime: parseInt(processingTime)}]
     );
@@ -67,6 +67,7 @@ export default function InputTable(props) {
     InputStore.setInput(allProcesses);
     InputStore.setQuantum(parseInt(quantum));
     InputStore.setListOfQuantum(listOfQuantum);
+    InputStore.setListOfAllotments(listOfAllotments);
     InputStore.setWindowHeight(windowHeight);
     InputStore.emitChange();
   }
@@ -76,9 +77,9 @@ export default function InputTable(props) {
     return listOfQuantum;
   }
 
-  const updateListOfAllotment = (index, value) => {
-    listOfAllotment[index] = parseInt(value);
-    return listOfAllotment;
+  const updatelistOfAllotments = (index, value) => {
+    listOfAllotments[index] = parseInt(value);
+    return listOfAllotments;
   }
   
   const getListOfQuantum = () => {
@@ -99,8 +100,8 @@ export default function InputTable(props) {
     })
   }
 
-  const getListOfAllotment = () => {
-    return listOfAllotment.map((q, index) => {
+  const getlistOfAllotments = () => {
+    return listOfAllotments.map((q, index) => {
       return (
         <TextField
           required
@@ -112,7 +113,7 @@ export default function InputTable(props) {
           color="outlined-primary"
           label={"Time allotment of queue "+index}
           className={classes.options}
-          onChange={(e) => setListOfAllotment(updateListOfAllotment(index, e.target.value))} />
+          onChange={(e) => setlistOfAllotments(updatelistOfAllotments(index, e.target.value))} />
       )
     })
   }
@@ -147,7 +148,7 @@ export default function InputTable(props) {
               onChange={(e) => {
                 setNumQueues(e.target.value);
                 setListOfQuantum(initializeListOfOptions(e.target.value));
-                setListOfAllotment(initializeListOfOptions(e.target.value));
+                setlistOfAllotments(initializeListOfOptions(e.target.value));
                 setWindowHeight(windowHeight + 100 * (e.target.value / 5 + 1));
               }}
               onKeyDown={(e) => setrenderOptions(true)}/>
@@ -158,7 +159,7 @@ export default function InputTable(props) {
           </div>
 
           <div className={classes.subsection}>
-            {renderOptions ? getListOfAllotment() : null}
+            {renderOptions ? getlistOfAllotments() : null}
           </div>
         </> 
       ) : null}

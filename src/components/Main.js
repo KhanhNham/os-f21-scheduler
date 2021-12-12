@@ -39,23 +39,24 @@ export default function Main() {
   const [quantum, setQuantum] = useState(InputStore.getQuantum());
   const [scheduler, setScheduler] = useState("SJF");
   const [listOfQuantum, setListOfQuantum] = useState([]);
+  const [listOfAllotments, setListOfAllotments] = useState([]);
   const [windowHeight, setWindowHeight] = useState(InputStore.getWindowHeight());
   
   useEffect(() => {
     InputStore.addChangeListener(onChange);
     return () => InputStore.removeChangeListener(onChange);
-  }, [input, quantum, scheduler, listOfQuantum, windowHeight]);
+  }, [input, quantum, scheduler, listOfQuantum, listOfAllotments, windowHeight]);
 
   function onChange() {
     setInput(InputStore.getInput());
     setQuantum(InputStore.getQuantum());
     setListOfQuantum(InputStore.getListOfQuantum());
+    setListOfAllotments(InputStore.getListOfAllotments());
     setWindowHeight(InputStore.getWindowHeight());
   }
   
   const classes = useStyles();
 
-  let [showGraphic, setShow] = useState(false);
   let [graphic, setGraphic] = useState(<></>);
 
   function simulate() {
@@ -74,14 +75,13 @@ export default function Main() {
       const sjf = new SJF(tasks);
       res = sjf.simulate();
     } else if (scheduler === "MLFQ") {
-      const mlfq = new MLFQ(listOfQuantum, tasks);
+      const mlfq = new MLFQ(tasks, listOfQuantum, listOfAllotments);
       res = mlfq.simulate();
     }
     
     // for (var i =0; i < res.length; i++) {
     //   console.log(res[i]);
     // }
-    setShow(true);
     var tableHeight = listOfQuantum.length == 0 ? 300 : 100 * (listOfQuantum.length+1);
     setWindowHeight(windowHeight + tableHeight);
 
