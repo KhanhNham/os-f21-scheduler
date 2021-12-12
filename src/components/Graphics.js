@@ -50,7 +50,7 @@ export default function Graphics(props) {
   
   
   return (
-    <Stage width={window.innerWidth} height={props.windowHeight}>
+    <Stage width={window.innerWidth} height={props.stageHeight}>
       <Layer>
         {drawIndexTable()}
         {drawAllProcesses()}

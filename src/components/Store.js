@@ -11,6 +11,7 @@ class Store extends EventEmitter {
     this.quantum = 0;
     this.numQueues = 0;
     this.listOfQuantum = [];
+    this.windowHeight = window.innerHeight;
   }
 
   addChangeListener(callback) {
@@ -41,6 +42,10 @@ class Store extends EventEmitter {
     return this.listOfQuantum;
   }
 
+  getWindowHeight() {
+    return this.windowHeight;
+  }
+
   setInput(input) {
     this.input = input;
   }
@@ -51,6 +56,10 @@ class Store extends EventEmitter {
   
   setListOfQuantum(listOfQuantum) {
     this.listOfQuantum = listOfQuantum;
+  }
+
+  setWindowHeight(height) {
+    this.windowHeight = height;
   }
 }
 

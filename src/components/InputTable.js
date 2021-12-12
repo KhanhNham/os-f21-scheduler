@@ -21,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: indigo[100],
   },
   subsection: {
-    paddingTop: theme.spacing(2),
-    paddingBottom:theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom:theme.spacing(1),
   },
   options: {
     padding: theme.spacing(1.5),
@@ -40,10 +40,11 @@ export default function InputTable(props) {
   const [listOfQuantum, setListOfQuantum] = useState([]);
   const [listOfAllotment, setListOfAllotment] = useState([]);
   const [renderOptions, setrenderOptions] = useState(false);
-  
+  const [windowHeight, setWindowHeight] = useState(InputStore.getWindowHeight());
+
   React.useEffect(() => {
     sendInputToStore();
-  }, [allProcesses, quantum, numQueues, renderOptions]);
+  }, [allProcesses, quantum, numQueues, renderOptions, windowHeight]);
 
   const initializeListOfOptions = (num) => {
     var arr = [];
@@ -53,6 +54,7 @@ export default function InputTable(props) {
     return arr;
   }
   const handleAdd = () => {
+    setWindowHeight(windowHeight + 40);
     setAllProcesses(oldArray => 
       [...oldArray, {processNumber: "P" + totalProcess, enqueueTime: parseInt(enqueueTime), processingTime: parseInt(processingTime)}]
     );
@@ -65,6 +67,7 @@ export default function InputTable(props) {
     InputStore.setInput(allProcesses);
     InputStore.setQuantum(parseInt(quantum));
     InputStore.setListOfQuantum(listOfQuantum);
+    InputStore.setWindowHeight(windowHeight);
     InputStore.emitChange();
   }
 
@@ -144,7 +147,8 @@ export default function InputTable(props) {
               onChange={(e) => {
                 setNumQueues(e.target.value);
                 setListOfQuantum(initializeListOfOptions(e.target.value));
-                setListOfAllotment(initializeListOfOptions(e.target.value))
+                setListOfAllotment(initializeListOfOptions(e.target.value));
+                setWindowHeight(windowHeight + 100 * (e.target.value / 5 + 1));
               }}
               onKeyDown={(e) => setrenderOptions(true)}/>
           </div>

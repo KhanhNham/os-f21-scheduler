@@ -29,6 +29,8 @@ const useStyles = makeStyles((theme) => ({
   },
   allScreen: {
     backgroundColor: blue[50],
+    width: window.innerWidth,
+    height: "100%",
   }
 }));
 
@@ -37,16 +39,18 @@ export default function Main() {
   const [quantum, setQuantum] = useState(InputStore.getQuantum());
   const [scheduler, setScheduler] = useState("SJF");
   const [listOfQuantum, setListOfQuantum] = useState([]);
-
+  const [windowHeight, setWindowHeight] = useState(InputStore.getWindowHeight());
+  
   useEffect(() => {
     InputStore.addChangeListener(onChange);
     return () => InputStore.removeChangeListener(onChange);
-  }, [input, quantum, scheduler, listOfQuantum]);
+  }, [input, quantum, scheduler, listOfQuantum, windowHeight]);
 
   function onChange() {
     setInput(InputStore.getInput());
     setQuantum(InputStore.getQuantum());
     setListOfQuantum(InputStore.getListOfQuantum());
+    setWindowHeight(InputStore.getWindowHeight());
   }
   
   const classes = useStyles();
@@ -78,11 +82,14 @@ export default function Main() {
     //   console.log(res[i]);
     // }
     setShow(true);
+    var tableHeight = listOfQuantum.length == 0 ? 300 : 100 * (listOfQuantum.length+1);
+    setWindowHeight(windowHeight + tableHeight);
+
     setGraphic(
       <Graphics
         res={res} 
         startX={100}
-        windowHeight={listOfQuantum.length == 0 ? 300 : 100 * (listOfQuantum.length+1)}
+        stageHeight={tableHeight}
         y={10} 
         height={100} 
         colorMap={colorMap}
@@ -95,7 +102,7 @@ export default function Main() {
   }
   
   return (
-    <div className={classes.allScreen}>
+    <div style={{backgroundColor: blue[50], height: windowHeight}}>
       <Container maxWidth="lg">
         <Header />
 
