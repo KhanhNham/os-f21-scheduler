@@ -11,8 +11,6 @@ export class MLFQ {
     }
     this.result = [];
     this.incomingTasks = new Queue();
-    this.currQueue = null;
-    this.complete = [];
     this.time = 0;
     this.runningTasks = null;
     this.quantum = 0;
@@ -20,14 +18,10 @@ export class MLFQ {
     this.lastEnqueueTime = 0;
     this.listOfAllotments = listOfAllotments;
     this.timeLeft = 0;
-    this.ctr = 0;
+    // this.ctr = 0;
   }
 
   simulate() {
-    console.log("Hey" + this.listOfAllotments);
-    for (var i =0; i < this.tasks.length; i++) {
-      this.complete[this.tasks[i].id] = false;
-    }  
     this.tasks.sort((a, b) => a.enqueueTime - b.enqueueTime);
     this.lastEnqueueTime = this.tasks[this.tasks.length-1].enqueueTime;
 
@@ -39,41 +33,39 @@ export class MLFQ {
       this.runningTasks.enqueue(this.incomingTasks.dequeue());
     }
     this.quantum = this.listOfQuantums[this.currRank];
-    this.timeLeft = this.listOfAllotments[this.currRank];
+    // this.timeLeft = this.listOfAllotments[this.currRank];
     
     while (!this.runningTasks.isEmpty()) {
-      // console.log("Running...");
-      // var ctr = 0;
-      this.ctr = 0;
-      while (this.ctr < this.quantum && this.timeLeft > 0 && !this.runningTasks.isEmpty() && this.runningTasks.peek().processingTime > 0 ) {
+      var ctr =0;
+      while (ctr < this.quantum && !this.runningTasks.isEmpty() && this.runningTasks.peek().processingTime > 0 ) {
+        this.checkNewArrival();
         this.runningTasks.peek().processingTime -= 1;
         this.result.push({queue: this.currRank, id: this.runningTasks.peek().id});
         // console.log("Running tasks in loop is " + this.runningTasks.printQueue());
         // console.log("Quantum is in loop is " + this.quantum);
         this.time += 1;
-        this.timeLeft -= 1;
-        this.ctr++;
-        this.checkNewArrival();
+        ctr++;
       }
-      console.log("time left " + this.timeLeft + " rank " + this.currRank + " this.ctr " + this.ctr);
-      this.queueMaintainence();
       
+      this.queueMaintainence();
+      this.checkNewArrival();
+
       var count = 0;
-      while (this.timeLeft === 0 || (this.runningTasks.isEmpty() && count < this.numQueues)) {
-        //move to the next queue
+      //move to the next queue if running out of time allotment or there is no task to run in this queue
+      while (this.runningTasks.isEmpty() && count < this.numQueues) {
         this.currRank += 1;
         if (this.currRank == this.numQueues) {
           this.currRank = 0;
         }
         this.runningTasks = this.tasksForEachQueue[this.currRank];
         this.quantum = this.listOfQuantums[this.currRank];
-        this.timeLeft = this.listOfAllotments[this.currRank];
+        // this.timeLeft = this.listOfAllotments[this.currRank];
         count += 1;
       }
 
+      //CPU is idle
       if (this.runningTasks.isEmpty()) {
-        this.runningTasks = this.tasksForEachQueue[0];
-        this.quantum = this.listOfQuantums[0];
+        this.changeToHighestPriorityQueue();
         while (this.runningTasks.isEmpty() && this.time <= this.lastEnqueueTime) {
           this.time++;
           this.checkNewArrival();
@@ -86,24 +78,36 @@ export class MLFQ {
     return this.result;
   }
 
+  changeToHighestPriorityQueue() {
+    this.currRank = 0;
+    this.runningTasks = this.tasksForEachQueue[0];
+    this.quantum = this.listOfQuantums[0];
+    // this.timeLeft = this.listOfAllotments[0];
+  }
+
   checkNewArrival() {
+    var hasNewArrival = false;
     while (!this.incomingTasks.isEmpty() && this.incomingTasks.peek().enqueueTime <= this.time) {
-      // console.log("adding " + this.incomingTasks.peek().id);
       this.tasksForEachQueue[0].enqueue(this.incomingTasks.dequeue());
+      hasNewArrival = true;
+    }
+
+    if (hasNewArrival && this.currRank !== 0) {
+      this.changeToHighestPriorityQueue();
+      this.ctr = 0;
     }
   }
 
   queueMaintainence() {
     var top = this.runningTasks.dequeue();
-    // console.log("top processing time " + top.processingTime);
     if (top.processingTime > 0) {
       var nextRank = this.currRank < this.numQueues-1 ? this.currRank + 1 : -1;
-      if (nextRank !== -1 && this.ctr === this.quantum) {
+
+      if (nextRank !== -1) {
         this.tasksForEachQueue[nextRank].enqueue(top);
       } else {
         this.runningTasks.enqueue(top);
       }
     }
   }
-
 }

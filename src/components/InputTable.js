@@ -38,7 +38,7 @@ export default function InputTable(props) {
   const [allProcesses, setAllProcesses] = useState([]);
   const [numQueues, setNumQueues] = useState(0);
   const [listOfQuantum, setListOfQuantum] = useState([]);
-  const [listOfAllotments, setlistOfAllotments] = useState([]);
+  // const [listOfAllotments, setlistOfAllotments] = useState([]);
   const [renderOptions, setrenderOptions] = useState(false);
   const [windowHeight, setWindowHeight] = useState(InputStore.getWindowHeight());
 
@@ -67,7 +67,7 @@ export default function InputTable(props) {
     InputStore.setInput(allProcesses);
     InputStore.setQuantum(parseInt(quantum));
     InputStore.setListOfQuantum(listOfQuantum);
-    InputStore.setListOfAllotments(listOfAllotments);
+    // InputStore.setListOfAllotments(listOfAllotments);
     InputStore.setWindowHeight(windowHeight);
     InputStore.emitChange();
   }
@@ -77,10 +77,10 @@ export default function InputTable(props) {
     return listOfQuantum;
   }
 
-  const updatelistOfAllotments = (index, value) => {
-    listOfAllotments[index] = parseInt(value);
-    return listOfAllotments;
-  }
+  // const updatelistOfAllotments = (index, value) => {
+  //   listOfAllotments[index] = parseInt(value);
+  //   return listOfAllotments;
+  // }
   
   const getListOfQuantum = () => {
     return listOfQuantum.map((q, index) => {
@@ -100,23 +100,23 @@ export default function InputTable(props) {
     })
   }
 
-  const getlistOfAllotments = () => {
-    return listOfAllotments.map((q, index) => {
-      return (
-        <TextField
-          required
-          defaultValue={q}
-          key={"timeAllotment" + index}
-          name={"timeAllotment" + index}
-          id="outlined-basic"
-          variant="outlined"
-          color="outlined-primary"
-          label={"Time allotment of queue "+index}
-          className={classes.options}
-          onChange={(e) => setlistOfAllotments(updatelistOfAllotments(index, e.target.value))} />
-      )
-    })
-  }
+  // const getlistOfAllotments = () => {
+  //   return listOfAllotments.map((q, index) => {
+  //     return (
+  //       <TextField
+  //         required
+  //         defaultValue={q}
+  //         key={"timeAllotment" + index}
+  //         name={"timeAllotment" + index}
+  //         id="outlined-basic"
+  //         variant="outlined"
+  //         color="outlined-primary"
+  //         label={"Time allotment of queue "+index}
+  //         className={classes.options}
+  //         onChange={(e) => setlistOfAllotments(updatelistOfAllotments(index, e.target.value))} />
+  //     )
+  //   })
+  // }
 
   return (
     <div>
@@ -148,7 +148,7 @@ export default function InputTable(props) {
               onChange={(e) => {
                 setNumQueues(e.target.value);
                 setListOfQuantum(initializeListOfOptions(e.target.value));
-                setlistOfAllotments(initializeListOfOptions(e.target.value));
+                // setlistOfAllotments(initializeListOfOptions(e.target.value));
                 setWindowHeight(windowHeight + 100 * (e.target.value / 5 + 1));
               }}
               onKeyDown={(e) => setrenderOptions(true)}/>
@@ -158,9 +158,9 @@ export default function InputTable(props) {
             {renderOptions ? getListOfQuantum() : null}
           </div>
 
-          <div className={classes.subsection}>
+          {/* <div className={classes.subsection}>
             {renderOptions ? getlistOfAllotments() : null}
-          </div>
+          </div> */}
         </> 
       ) : null}
 

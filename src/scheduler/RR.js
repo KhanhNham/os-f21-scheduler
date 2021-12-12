@@ -24,15 +24,15 @@ export class RoundRobin {
     while (!this.queue.isEmpty()) {
       var ctr = 0;
       while (ctr < this.quantum && (this.queue.peek().processingTime > 0)) {
+        this.checkNewArrival();
         this.queue.peek().processingTime -= 1;
         this.result.push(this.queue.peek().id);
         this.time += 1;
         ctr++;
-        this.checkNewArrival();
       }
         
       this.queueMaintainence();
-
+      this.checkNewArrival();
       while (this.queue.isEmpty() && this.time <= this.lastEnqueueTime){
         this.time += 1;
         this.checkNewArrival();
