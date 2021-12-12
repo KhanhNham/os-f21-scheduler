@@ -43,7 +43,7 @@ export class MLFQ {
 
       while (ctr < this.quantum && !this.runningTasks.isEmpty() && this.runningTasks.peek().processingTime > 0 ) {
         this.runningTasks.peek().processingTime -= 1;
-        this.result.push(this.runningTasks.peek().id);
+        this.result.push({queue: this.currRank, id: this.runningTasks.peek().id});
         // console.log("Running tasks in loop is " + this.runningTasks.printQueue());
         // console.log("Quantum is in loop is " + this.quantum);
         this.time += 1;

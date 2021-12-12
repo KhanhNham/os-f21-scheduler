@@ -7,27 +7,28 @@ export default function Graphics(props) {
 
   const drawRect = (x, y, width, height, color) => <Rect key={count} x={x} y={y} width={width} height={height} fill={color}/>
 
-  const drawOneProcess = (process) => {
+  const drawOneProcess = (process, y) => {
     if (props.scheduler === "SJF" ) {
       var prev = x;
       x += process.processingTime;
-      return drawRect(prev, props.y, process.processingTime, props.height, process.color);
-      
+      return drawRect(prev, y, process.processingTime, props.height, process.color);
+    } else if (props.scheduler === "RR") {
+      return drawRect(x+count, y, 1, props.height, props.colorMap.get(process));
     } else {
-      return drawRect(x+count, props.y, 1, props.height, props.colorMap.get(process));
+      return drawRect(x+count, y+(props.height * process.queue), 1, props.height, props.colorMap.get(process.id));
     }
     
   }
   
   const drawAllProcesses = () => {
+    var y = props.y + 80;
     return props.res.map(process => {
       count++;
-      return drawOneProcess(process);
+      return drawOneProcess(process, y);
     })
   }
 
   const drawIndexTable = () => {
-    var y = props.y + props.height + 50;
     var tempX = props.startX;
     var pairs = [];
     props.colorMap.forEach((color, id) => {
@@ -40,8 +41,8 @@ export default function Graphics(props) {
       tempX += 100;
       return (
         <Group>
-          <Rect x={rectX} y={y} width={20} height={20} fill={p.color}/>
-          <Text x={rectX + 30} y={y} text={"P"+p.id} fontSize={15} />
+          <Rect x={rectX} y={props.y} width={20} height={20} fill={p.color}/>
+          <Text x={rectX + 30} y={props.y} text={"P"+p.id} fontSize={15} />
         </Group>
       )
     })
@@ -49,11 +50,11 @@ export default function Graphics(props) {
   
   
   return (
-    <Stage width={window.innerWidth} height={200}>
+    <Stage width={window.innerWidth} height={props.windowHeight}>
       <Layer>
-        {drawAllProcesses()}
         {drawIndexTable()}
+        {drawAllProcesses()}
       </Layer>
-    </Stage>
+    </Stage>    
   );
 }

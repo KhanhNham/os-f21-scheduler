@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { RoundRobin } from "../scheduler/RR";
 import { MLFQ } from "../scheduler/MLFQ";
 import { Typography } from "@mui/material";
+import { blue } from '@mui/material/colors';
 
 const useStyles = makeStyles((theme) => ({
   sectionHeader: {
@@ -25,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
   },
   schedulerButtonGroup: {
     marginRight: theme.spacing(4),
+  },
+  allScreen: {
+    backgroundColor: blue[50],
   }
 }));
 
@@ -74,7 +78,16 @@ export default function Main() {
     //   console.log(res[i]);
     // }
     setShow(true);
-    setGraphic(<Graphics res={res} startX={100} y={10} height={100} colorMap={colorMap} scheduler={scheduler}/>);
+    setGraphic(
+      <Graphics
+        res={res} 
+        startX={100}
+        windowHeight={listOfQuantum.length == 0 ? 300 : 100 * (listOfQuantum.length+1)}
+        y={10} 
+        height={100} 
+        colorMap={colorMap}
+        scheduler={scheduler}/>
+    );
   }
 
   const getInputTable = () => {
@@ -82,7 +95,7 @@ export default function Main() {
   }
   
   return (
-    <>
+    <div className={classes.allScreen}>
       <Container maxWidth="lg">
         <Header />
 
@@ -149,6 +162,6 @@ export default function Main() {
         <div className={classes.section}>{graphic}</div>
       </Container>
       {/* <Footer title="Footer" description="Something here to give the footer a purpose!" /> */}
-    </>
+    </div>
   )
 }

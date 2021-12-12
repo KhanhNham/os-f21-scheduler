@@ -24,8 +24,8 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(2),
     paddingBottom:theme.spacing(2),
   },
-  quantumOptions: {
-    padding: theme.spacing(1),
+  options: {
+    padding: theme.spacing(1.5),
   }
 }));
 
@@ -38,13 +38,14 @@ export default function InputTable(props) {
   const [allProcesses, setAllProcesses] = useState([]);
   const [numQueues, setNumQueues] = useState(0);
   const [listOfQuantum, setListOfQuantum] = useState([]);
-  const [renderListOfQuantum, setRenderListOfQuantum] = useState(false);
+  const [listOfAllotment, setListOfAllotment] = useState([]);
+  const [renderOptions, setrenderOptions] = useState(false);
   
   React.useEffect(() => {
     sendInputToStore();
-  }, [allProcesses, quantum, numQueues, renderListOfQuantum]);
+  }, [allProcesses, quantum, numQueues, renderOptions]);
 
-  const initializeListOfQuantum = (num) => {
+  const initializeListOfOptions = (num) => {
     var arr = [];
     for (var i =0; i< num; i++) {
       arr.push(0);
@@ -71,6 +72,11 @@ export default function InputTable(props) {
     listOfQuantum[index] = parseInt(value);
     return listOfQuantum;
   }
+
+  const updateListOfAllotment = (index, value) => {
+    listOfAllotment[index] = parseInt(value);
+    return listOfAllotment;
+  }
   
   const getListOfQuantum = () => {
     return listOfQuantum.map((q, index) => {
@@ -84,9 +90,26 @@ export default function InputTable(props) {
           variant="outlined"
           color="outlined-primary"
           label={"Quantum of queue "+index}
-          className={classes.quantumOptions}
-          onChange={(e) => setListOfQuantum(updateListOfQuantum(index, e.target.value))}
-        />
+          className={classes.options}
+          onChange={(e) => setListOfQuantum(updateListOfQuantum(index, e.target.value))}/>
+      )
+    })
+  }
+
+  const getListOfAllotment = () => {
+    return listOfAllotment.map((q, index) => {
+      return (
+        <TextField
+          required
+          defaultValue={q}
+          key={"timeAllotment" + index}
+          name={"timeAllotment" + index}
+          id="outlined-basic"
+          variant="outlined"
+          color="outlined-primary"
+          label={"Time allotment of queue "+index}
+          className={classes.options}
+          onChange={(e) => setListOfAllotment(updateListOfAllotment(index, e.target.value))} />
       )
     })
   }
@@ -97,7 +120,7 @@ export default function InputTable(props) {
           <div className={classes.subsection}>
             <TextField 
               required
-              className={classes.quantumOptions}
+              className={classes.options}
               id="outlined-basic"
               variant="outlined"
               color="outlined-primary"
@@ -112,17 +135,26 @@ export default function InputTable(props) {
           <div className={classes.subsection}>
             <TextField 
               required
-              className={classes.quantumOptions}
+              className={classes.options}
               id="outlined-basic"
               variant="outlined"
               color="outlined-primary"
               label="Number of queues"
               name="numQueues"
-              onChange={(e) => {setNumQueues(e.target.value); setListOfQuantum(initializeListOfQuantum(e.target.value))}} onKeyDown={(e) => setRenderListOfQuantum(true)}/>
+              onChange={(e) => {
+                setNumQueues(e.target.value);
+                setListOfQuantum(initializeListOfOptions(e.target.value));
+                setListOfAllotment(initializeListOfOptions(e.target.value))
+              }}
+              onKeyDown={(e) => setrenderOptions(true)}/>
           </div>
           
           <div className={classes.subsection}>
-            {renderListOfQuantum ? getListOfQuantum() : null}
+            {renderOptions ? getListOfQuantum() : null}
+          </div>
+
+          <div className={classes.subsection}>
+            {renderOptions ? getListOfAllotment() : null}
           </div>
         </> 
       ) : null}
