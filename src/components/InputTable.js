@@ -184,10 +184,10 @@ export default function InputTable(props) {
                 <TableRow>
                   <TableCell align="center"> {"P" + totalProcess} </TableCell>
                   <TableCell align="center">
-                    <TextField required placeholder="Please enter a multiple of 10" fullWidth name="enqueueTime" onChange={(e) => setEnqueueTime(e.target.value)}/>
+                    <TextField required placeholder="" fullWidth name="enqueueTime" onChange={(e) => setEnqueueTime(e.target.value)}/>
                   </TableCell>
                   <TableCell align="center">
-                    <TextField required placeholder="Please enter a multiple of 10" fullWidth name="processingTime" onChange={(e) => setProcessingTime(e.target.value)}/>
+                    <TextField required placeholder="" fullWidth name="processingTime" onChange={(e) => setProcessingTime(e.target.value)}/>
                   </TableCell>
                 </TableRow>
             </TableBody>
